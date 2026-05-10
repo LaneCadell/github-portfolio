@@ -4,7 +4,7 @@ Welcome to my data science portfolio! This repository showcases my projects, ski
 
 ## About Me
 
-I'm a data scientist passionate about turning data into actionable insights. With expertise in Python, SQL, R, and various ML frameworks, I help organizations make data-driven decisions.
+I'm a data scientist passionate about turning data into actionable insights. With expertise in Python, SQL, and various ML frameworks, I help organizations make data-driven decisions.
 
 ## Projects
 
@@ -29,15 +29,15 @@ A conversational AI agent built with Pydantic AI that helps users reach gambling
 
 For a detailed overview of my professional experience, education, and certifications, please view my resume:
 
-[Lane Cadell Resume](/Users/kayleighinman/Downloads/Lane_Cadell_Resume.pdf)
+([Lane_Cadell_Resume.pdf](https://github.com/user-attachments/files/27573309/Lane_Cadell_Resume.pdf))
 
 *(Note: This is a local file path. If uploading to GitHub, replace with the uploaded PDF link.)*
 
 ## Contact
 
-- **Email**: [your.email@example.com](mailto:your.email@example.com)
-- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
-- **GitHub**: [Your GitHub](https://github.com/yourusername)
+- **Email**: [LaneDanielCadell@gmail.com](mailto:LaneDanielCadell@gmail.com)
+- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/lanecadell)
+- **GitHub**: [Your GitHub](https://github.com/lanecadell)
 
 Feel free to reach out if you'd like to discuss potential collaborations or opportunities!
 
