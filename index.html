@@ -8,13 +8,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .circular-portrait {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 1.5rem;
+      border: 3px solid #333;
+    }
+  </style>
 </head>
 <body>
   <div class="page-shell">
     <header class="hero-section">
       <div class="hero-copy">
         <p class="eyebrow">Data Science Portfolio</p>
-        <h1>Hi, I’m Lane - I design practical data-driven solutions.</h1>
+        <h1>Hi, I'm Lane - I design practical data-driven solutions.</h1>
         <p class="hero-text">I turn data into value by combining data engineering, predictive modeling, and polished visual storytelling. This portfolio highlights some analytics side-projects, machine learning solutions, and techniques I use to support growth and profitability.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="#projects">View Projects</a>
@@ -50,29 +60,7 @@
             <li>Tools: Python, Pydantic AI, OpenAI / Anthropic APIs, SMTP</li>
             <li>Outcome: Created a production-ready support workflow for sensitive user assistance</li>
           </ul>
-          <a href="../AI_Gambling_Support_Agent/" class="project-link">Open project directory</a>
-        </article>
-
-        <article class="project-card">
-          <span class="project-tag">Portfolio</span>
-          <h3>Portfolio Presentation</h3>
-          <p>Designed this employer-facing portfolio page and README to showcase projects, skills, and career-ready data science work.</p>
-          <ul>
-            <li>Tools: HTML, CSS, GitHub Pages-ready layout</li>
-            <li>Outcome: Created a polished, mobile-responsive presentation for hiring managers</li>
-          </ul>
-          <a href="./" class="project-link">View this page</a>
-        </article>
-
-        <article class="project-card">
-          <span class="project-tag">Professional Branding</span>
-          <h3>Resume & Contact Assets</h3>
-          <p>Embedded a resume and contact section directly in the portfolio for recruiters to access your professional story with one click.</p>
-          <ul>
-            <li>Tools: Markdown, PDF asset management, GitHub repository organization</li>
-            <li>Outcome: Simplified recruiter access to your resume and portfolio materials</li>
-          </ul>
-          <a href="../README.md" class="project-link">Open portfolio README</a>
+          <a href="./AI_Gambling_Support_Agent/" class="project-link">Open project directory</a>
         </article>
       </div>
     </section>
@@ -113,7 +101,7 @@
       <div class="about-panel">
         <div class="contact-card">
           <h3>Ready to collaborate?</h3>
-          <p>Share your hiring goals and I’ll show how data science can improve decision making, reduce risk, and increase operational efficiency.</p>
+          <p>Share your hiring goals and I'll show how data science can improve decision making, reduce risk, and increase operational efficiency.</p>
           <a class="btn btn-primary" href="#contact">Get in touch</a>
         </div>
       </div>
@@ -121,18 +109,15 @@
 
     <footer id="contact" class="footer-section">
       <div>
-        <p class="eyebrow">Let’s connect</p>
+        <img src="./IMG_6702.JPG" alt="Portrait" class="circular-portrait" />
+        <p class="eyebrow">Let's connect</p>
         <h2>Interested in working together?</h2>
         <p>Email me at <a href="mailto:LaneDanielCadell@gmail.com">LaneDanielCadell@gmail.com</a> or connect via LinkedIn @lanecadell.</p>
-        <p><a href="Lane_Cadell_Resume.pdf">Download Resume</a></p>
       </div>
       <div class="footer-links">
         <a href="#projects">Projects</a>
         <a href="#skills">Skills</a>
         <a href="#contact">Contact</a>
-      </div>
-      <div class="footer-photo">
-        <img src="IMG_6702.JPG" alt="Professional photo of Lane Cadell" />
       </div>
     </footer>
   </div>
