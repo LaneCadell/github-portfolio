@@ -18,7 +18,7 @@ A conversational AI agent built with Pydantic AI that helps users reach gambling
 This Streamlit dashboard collects recent tweets about a specific topic, analyzes their sentiment using TextBlob's natural language processing, and visualizes the results with interactive charts and metrics.
 
 - **Technologies**: Python, Plotly, Pandas, Streamlit, TextBlob
-- **Features**: 
+- **Features**: Real-time Sentiment Analysis, Interactive Visualizations, Engagement Tracking, Tweet Details, Summary Statistics
 
 ## Skills
 
