@@ -15,14 +15,12 @@ A conversational AI agent built with Pydantic AI that helps users reach gambling
 - **Features**: Multi-turn conversation, automated email sending, helpline resources
 - [View Project](./AI_Gambling_Support_Agent/)
 
-*(Add more projects here as you build them)*
-
 ## Skills
 
-- **Programming**: Python, R, SQL
-- **Machine Learning**: Scikit-learn, TensorFlow, XGBoost, SHAP
-- **Data Visualization**: Tableau, Looker, Matplotlib, Plotly
-- **Tools**: Git, Docker, AWS, GCP
+- **Programming**: Python, SQL
+- **Machine Learning**: Scikit-learn, TensorFlow, LightGBM, XGBoost, SHAP
+- **Data Visualization**: Amazon Quick, Mode, Tableau, Looker, Matplotlib, Plotly
+- **Tools**: Git, AWS
 - **Other**: ETL pipelines, feature engineering, model validation
 
 ## Resume
@@ -36,8 +34,8 @@ For a detailed overview of my professional experience, education, and certificat
 ## Contact
 
 - **Email**: [LaneDanielCadell@gmail.com](mailto:LaneDanielCadell@gmail.com)
-- **LinkedIn**: [Your LinkedIn Profile](https://linkedin.com/in/lanecadell)
-- **GitHub**: [Your GitHub](https://github.com/lanecadell)
+- **LinkedIn**: [LinkedIn Profile](https://linkedin.com/in/lanecadell)
+- **GitHub**: [GitHub](https://github.com/lanecadell)
 
 Feel free to reach out if you'd like to discuss potential collaborations or opportunities!
 
