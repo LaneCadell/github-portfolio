@@ -20,6 +20,19 @@ This Streamlit dashboard collects recent tweets about a specific topic, analyzes
 - **Technologies**: Python, Plotly, Pandas, Streamlit, TextBlob
 - **Features**: Real-time Sentiment Analysis, Interactive Visualizations, Engagement Tracking, Tweet Details, Summary Statistics
 
+### Quantile Return Forecasting Pipeline
+An end-to-end machine learning system for predicting 3-month forward stock returns across multiple quantiles using LightGBM quantile regression. Integrates market-based probabilities from APIs (Alpha Vantage, FRED, Kalshi) and reconstructs absolute price targets from return predictions.
+
+- **Technologies**: Python, LightGBM, Scikit-learn, Pandas, Streamlit, APIs (Alpha Vantage, FRED, Kalshi)
+- **Features**: 
+  - Quantile regression (20th, 50th, 80th percentile forecasts)
+  - Walk-forward backtesting with directional accuracy & information coefficient metrics
+  - Technical indicators + macroeconomic + sentiment features
+  - Universe filtering by market cap ($20B+)
+  - CLI and Streamlit web interface with "fan chart" visualizations
+- **Key Insight**: Predicting percentage returns (stationary) instead of prices enables more stable models and economically meaningful predictions
+- **Metrics**: Directional Accuracy, Information Coefficient, MAE/MAPE for both returns and reconstructed prices
+
 ## Skills
 
 - **Programming**: Python, SQL
