@@ -32,9 +32,7 @@ This Streamlit dashboard collects recent tweets about a specific topic, analyzes
 
 For a detailed overview of my professional experience, education, and certifications, please view my resume:
 
-([Lane_Cadell_Resume.pdf](https://github.com/user-attachments/files/27573309/Lane_Cadell_Resume.pdf))
-
-*(Note: This is a local file path. If uploading to GitHub, replace with the uploaded PDF link.)*
+[LaneCadell_Resume.pdf](./LaneCadell_Resume.pdf)
 
 ## Contact
 
