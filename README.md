@@ -2,6 +2,8 @@
 
 Welcome to my data science portfolio! This repository showcases my projects, skills, and experience in data analysis, machine learning, and business intelligence.
 
+The portfolio website files are located in the `portfolio/` folder.
+
 ## About Me
 
 I'm a data scientist passionate about turning data into actionable insights. With expertise in Python, SQL, and various ML frameworks, I help organizations make data-driven decisions.
