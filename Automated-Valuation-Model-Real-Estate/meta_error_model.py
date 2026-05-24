@@ -4,6 +4,7 @@ Trains secondary model on primary model's out-of-fold errors.
 Outputs Expected Error Score (EES) mapped to 0-100 scale.
 """
 
+import os
 import pandas as pd
 import numpy as np
 import lightgbm as lgb
@@ -253,12 +254,13 @@ class MetaErrorPredictor:
 
 
 if __name__ == "__main__":
+    import os
     from data_loader import RealEstateDataLoader
     from feature_engineering import FeatureEngineer
     from primary_model import PrimaryQuantileAVM
 
-    # Load and prepare data
-    loader = RealEstateDataLoader("/Users/kayleighinman/Downloads/kc_house_data.csv")
+    data_path = os.path.join(os.path.dirname(__file__), "kc_house_data.csv")
+    loader = RealEstateDataLoader(data_path)
     df = loader.load_data()
     train, val, test = loader.temporal_split()
 

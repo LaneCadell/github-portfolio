@@ -62,8 +62,29 @@ class RiskAwareREPricingPipeline:
         self.data_loader = RealEstateDataLoader(self.data_path)
         df = self.data_loader.load_data()
 
+        df, outlier_report = self.data_loader.apply_outlier_pipeline(df)
+        logger.info("Applied deterministic outlier pipeline to the loaded dataset")
+        logger.info(
+            "Outlier report: " + ", ".join(
+                [f"{k}={v}" for k, v in outlier_report.items() if k != "original_count" and k != "final_count"]
+            )
+        )
+
+        self.data_loader.df = df
         train_df, val_df, test_df = self.data_loader.temporal_split(
             train_frac=0.7, val_frac=0.15
+        )
+
+        feature_columns = [
+            "bedrooms",
+            "bathrooms",
+            "sqft_living",
+            "sqft_lot",
+            "sqft_above",
+            "sqft_basement",
+        ]
+        train_df, val_df, test_df = self.data_loader.preprocess_split_sets(
+            train_df, val_df, test_df, feature_columns=feature_columns
         )
 
         return train_df, val_df, test_df

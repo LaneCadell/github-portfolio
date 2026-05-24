@@ -3,6 +3,7 @@ Feature Engineering Module
 Structural attributes, macroeconomic signals, and target encoding for Kings County data
 """
 
+import os
 import pandas as pd
 import numpy as np
 from typing import Tuple, Dict, Optional
@@ -171,10 +172,11 @@ class FeatureEngineer:
 
 
 if __name__ == "__main__":
+    import os
     from data_loader import RealEstateDataLoader
 
-    # Load data
-    loader = RealEstateDataLoader("/Users/kayleighinman/Downloads/kc_house_data.csv")
+    data_path = os.path.join(os.path.dirname(__file__), "kc_house_data.csv")
+    loader = RealEstateDataLoader(data_path)
     df = loader.load_data()
 
     # Create temporal split

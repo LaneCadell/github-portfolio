@@ -26,6 +26,17 @@ Risk-Stratified Pricing Decisions
 
 ---
 
+## Phase 1: Data Preparation & Baseline Validation
+
+- `1_king_county_eda.py` — runs deterministic outlier isolation, generates univariate EDA artifacts, and writes `outputs/1_eda/data_quality_report.md`.
+- `2_point_avm_baseline.py` — computes a rolling median price baseline and compares the AVM's $Q_{50}$ point forecast against it using MAPE, MdAPE, and RMSE.
+- Key diagnostic outputs:
+  - `outputs/1_eda/data_quality_report.md`
+  - `outputs/1_eda/price_distribution.png`
+  - `outputs/1_eda/price_per_sqft_distribution.png`
+  - `outputs/2_point_avm_baseline/model_lift_comparison.png`
+  - `outputs/2_point_avm_baseline/baseline_lift_summary.md`
+
 ## Core Components
 
 ### Stage 1: Probabilistic Modeling Layer (Primary AVM)
@@ -147,6 +158,13 @@ python main.py --base-spread 0.05 \
                --target-coverage 0.80
 ```
 
+### Phase 1 Evaluation Scripts
+
+```bash
+python 1_king_county_eda.py --data-path ./kc_house_data.csv
+python 2_point_avm_baseline.py --data-path ./kc_house_data.csv
+```
+
 **Output:**
 - Dual models trained on temporal splits (70% train, 15% val, 15% test)
 - 15,291 properties in test set scored with:
@@ -163,7 +181,7 @@ python main.py --base-spread 0.05 \
 from main import RiskAwareREPricingPipeline
 
 pipeline = RiskAwareREPricingPipeline(
-    data_path="/path/to/kc_house_data.csv"
+    data_path="./kc_house_data.csv"
 )
 
 results = pipeline.run_full_pipeline()

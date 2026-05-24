@@ -3,6 +3,7 @@ Primary Quantile Regression Model
 LightGBM-based AVM generating Q_10, Q_50, Q_90 price forecasts
 """
 
+import os
 import pandas as pd
 import numpy as np
 import lightgbm as lgb
@@ -202,11 +203,12 @@ class PrimaryQuantileAVM:
 
 
 if __name__ == "__main__":
+    import os
     from data_loader import RealEstateDataLoader
     from feature_engineering import FeatureEngineer
 
-    # Load and prepare data
-    loader = RealEstateDataLoader("/Users/kayleighinman/Downloads/kc_house_data.csv")
+    data_path = os.path.join(os.path.dirname(__file__), "kc_house_data.csv")
+    loader = RealEstateDataLoader(data_path)
     df = loader.load_data()
     train, val, test = loader.temporal_split()
 

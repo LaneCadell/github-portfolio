@@ -3,6 +3,7 @@ Calibration Layer
 Learns interval scaling factors to guarantee nominal coverage (e.g., 80%).
 """
 
+import os
 import numpy as np
 import pandas as pd
 from typing import Tuple
@@ -170,12 +171,13 @@ class CalibrationEngine:
 
 
 if __name__ == "__main__":
+    import os
     from data_loader import RealEstateDataLoader
     from feature_engineering import FeatureEngineer
     from primary_model import PrimaryQuantileAVM
 
-    # Load and prepare data
-    loader = RealEstateDataLoader("/Users/kayleighinman/Downloads/kc_house_data.csv")
+    data_path = os.path.join(os.path.dirname(__file__), "kc_house_data.csv")
+    loader = RealEstateDataLoader(data_path)
     df = loader.load_data()
     train, val, test = loader.temporal_split()
 

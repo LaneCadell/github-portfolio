@@ -3,11 +3,13 @@ Data Loading & Exploration Module
 Kings County Housing Dataset preparation and validation
 """
 
+import os
 import pandas as pd
 import numpy as np
 from typing import Tuple, Optional
 import logging
 from datetime import datetime
+from sklearn.ensemble import IsolationForest
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -26,6 +28,133 @@ class RealEstateDataLoader:
         self.filepath = filepath
         self.df = None
         self.metadata = {}
+        self.imputation_stats = {}
+        self.global_imputation_medians = {}
+        self.outlier_report = {}
+        self.is_imputer_fitted = False
+
+    @staticmethod
+    def project_data_path(filename: str = "kc_house_data.csv") -> str:
+        return os.path.join(os.path.dirname(__file__), filename)
+
+    def apply_outlier_pipeline(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, dict]:
+        df = df.copy()
+        report = {"original_count": len(df)}
+
+        price_filter = (df["price"] >= 50000) & (df["price"] <= 5000000)
+        report["price_floor_ceiling_removed"] = int(report["original_count"] - price_filter.sum())
+        df = df.loc[price_filter].copy()
+
+        physical_filter = (
+            df["sqft_living"].between(150, 20000) &
+            df["sqft_lot"].between(100, 200000) &
+            df["bedrooms"].between(1, 10) &
+            df["bathrooms"].between(0.5, 10)
+        )
+        report["physical_anomalies_removed"] = int(len(df) - physical_filter.sum())
+        df = df.loc[physical_filter].copy()
+
+        df["price_per_sqft"] = df["price"] / (df["sqft_living"] + 1e-10)
+        ppsqft_filter = df["price_per_sqft"].between(20, 2000)
+        report["price_per_sqft_extremes_removed"] = int(len(df) - ppsqft_filter.sum())
+        df = df.loc[ppsqft_filter].copy()
+
+        numeric_features = ["price", "sqft_living", "sqft_lot", "bedrooms", "bathrooms", "price_per_sqft"]
+        df_for_outliers = df[numeric_features].fillna(df[numeric_features].median())
+
+        isolation_forest = IsolationForest(contamination=0.01, random_state=42, n_jobs=-1)
+        isolation_forest.fit(df_for_outliers)
+        is_inlier = isolation_forest.predict(df_for_outliers) == 1
+        report["isolation_forest_removed"] = int(len(df) - is_inlier.sum())
+        df = df.loc[is_inlier].copy()
+
+        for col in ["price", "sqft_living", "sqft_lot", "price_per_sqft"]:
+            q1 = df[col].quantile(0.25)
+            q3 = df[col].quantile(0.75)
+            iqr = q3 - q1
+            low = q1 - 1.5 * iqr
+            high = q3 + 1.5 * iqr
+            iqr_filter = df[col].between(low, high)
+            report[f"{col}_iqr_removed"] = int(len(df) - iqr_filter.sum())
+            df = df.loc[iqr_filter].copy()
+
+        report["final_count"] = len(df)
+        self.outlier_report = report
+        return df, report
+
+    def fit_imputation(
+        self,
+        train_df: pd.DataFrame,
+        feature_columns: Optional[list] = None,
+        group_col: str = "zipcode",
+    ) -> None:
+        feature_columns = feature_columns or [
+            "bedrooms",
+            "bathrooms",
+            "sqft_living",
+            "sqft_lot",
+            "sqft_above",
+            "sqft_basement",
+        ]
+
+        self.imputation_stats = {}
+        self.global_imputation_medians = {}
+
+        for col in feature_columns:
+            self.imputation_stats[col] = train_df.groupby(group_col)[col].median().to_dict()
+            self.global_imputation_medians[col] = float(train_df[col].median())
+
+        self.is_imputer_fitted = True
+
+    def transform_imputation(
+        self,
+        df: pd.DataFrame,
+        feature_columns: Optional[list] = None,
+        group_col: str = "zipcode",
+    ) -> pd.DataFrame:
+        if not self.is_imputer_fitted:
+            raise ValueError("Imputer must be fitted on training data before transforming validation/test sets.")
+
+        feature_columns = feature_columns or [
+            "bedrooms",
+            "bathrooms",
+            "sqft_living",
+            "sqft_lot",
+            "sqft_above",
+            "sqft_basement",
+        ]
+
+        df = df.copy()
+        for col in feature_columns:
+            if col not in df.columns:
+                continue
+
+            def _fill_value(row):
+                if pd.notna(row[col]):
+                    return row[col]
+                group_value = self.imputation_stats[col].get(row[group_col])
+                return group_value if pd.notna(group_value) else self.global_imputation_medians[col]
+
+            df[col] = df.apply(_fill_value, axis=1)
+
+        if "sqft_above" in df.columns and "sqft_living" in df.columns:
+            df["sqft_basement"] = df["sqft_living"] - df["sqft_above"]
+
+        return df
+
+    def preprocess_split_sets(
+        self,
+        train_df: pd.DataFrame,
+        val_df: pd.DataFrame,
+        test_df: pd.DataFrame,
+        feature_columns: Optional[list] = None,
+        group_col: str = "zipcode",
+    ) -> tuple:
+        self.fit_imputation(train_df, feature_columns=feature_columns, group_col=group_col)
+        train_df = self.transform_imputation(train_df, feature_columns=feature_columns, group_col=group_col)
+        val_df = self.transform_imputation(val_df, feature_columns=feature_columns, group_col=group_col)
+        test_df = self.transform_imputation(test_df, feature_columns=feature_columns, group_col=group_col)
+        return train_df, val_df, test_df
 
     def load_data(self) -> pd.DataFrame:
         """
@@ -36,6 +165,7 @@ class RealEstateDataLoader:
         """
         logger.info(f"Loading data from {self.filepath}...")
         self.df = pd.read_csv(self.filepath)
+        self.df["date"] = pd.to_datetime(self.df["date"])
 
         logger.info(f"Shape: {self.df.shape}")
         logger.info(f"Columns: {self.df.columns.tolist()}")
@@ -161,7 +291,8 @@ class RealEstateDataLoader:
 
 
 if __name__ == "__main__":
-    loader = RealEstateDataLoader("/Users/kayleighinman/Downloads/kc_house_data.csv")
+    data_path = RealEstateDataLoader.project_data_path()
+    loader = RealEstateDataLoader(data_path)
     df = loader.load_data()
     print(df.head())
     print("\nMetadata:", loader.metadata)
