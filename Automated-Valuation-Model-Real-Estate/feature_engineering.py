@@ -70,6 +70,10 @@ class FeatureEngineer:
         features["sqft_basement"] = df["sqft_living"] - df["sqft_above"]
         features["basement_ratio"] = features["sqft_basement"] / (df["sqft_living"] + 1)
 
+        # Optional macroeconomic features
+        if "mortgage_rate" in df.columns:
+            features["mortgage_rate"] = df["mortgage_rate"]
+
         # Special features
         features["has_view"] = df["view"].astype(bool).astype(int)
         features["has_waterfront"] = df["waterfront"].astype(int)

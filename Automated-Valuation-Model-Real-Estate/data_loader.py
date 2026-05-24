@@ -4,6 +4,8 @@ Kings County Housing Dataset preparation and validation
 """
 
 import os
+import json
+import urllib.request
 import pandas as pd
 import numpy as np
 from typing import Tuple, Optional
@@ -36,6 +38,64 @@ class RealEstateDataLoader:
     @staticmethod
     def project_data_path(filename: str = "kc_house_data.csv") -> str:
         return os.path.join(os.path.dirname(__file__), filename)
+
+    @staticmethod
+    def _fetch_fred_series(series_id: str, api_key: str) -> pd.DataFrame:
+        """Fetch a FRED series as monthly observations."""
+        url = (
+            f"https://api.stlouisfed.org/fred/series/observations?"
+            f"series_id={series_id}&api_key={api_key}&file_type=json"
+        )
+
+        with urllib.request.urlopen(url, timeout=30) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+
+        observations = payload.get("observations", [])
+        if not observations:
+            return pd.DataFrame()
+
+        fred_df = pd.DataFrame(observations)
+        fred_df = fred_df.rename(columns={"date": "obs_date", "value": series_id})
+        fred_df = fred_df.loc[fred_df[series_id].notna()].copy()
+        fred_df["obs_date"] = pd.to_datetime(fred_df["obs_date"])
+        fred_df["sale_month"] = fred_df["obs_date"].dt.to_period("M").astype(str)
+        fred_df[series_id] = pd.to_numeric(fred_df[series_id], errors="coerce")
+
+        return fred_df[["sale_month", series_id]].drop_duplicates(subset=["sale_month"])
+
+    @staticmethod
+    def _build_macro_feature_df(df: pd.DataFrame) -> pd.DataFrame:
+        api_key = os.getenv("FRED_API_KEY")
+        if not api_key:
+            logger.info("FRED_API_KEY not set; skipping macro feature augmentation.")
+            return pd.DataFrame()
+
+        try:
+            mortgage_df = RealEstateDataLoader._fetch_fred_series("MORTGAGE30US", api_key)
+        except Exception as exc:
+            logger.warning("Unable to fetch FRED mortgage data: %s", exc)
+            return pd.DataFrame()
+
+        if mortgage_df.empty:
+            logger.warning("FRED mortgage data was empty; skipping macro feature augmentation.")
+            return pd.DataFrame()
+
+        mortgage_df = mortgage_df.rename(columns={"MORTGAGE30US": "mortgage_rate"})
+        return mortgage_df
+
+    @staticmethod
+    def augment_with_macro_features(df: pd.DataFrame) -> pd.DataFrame:
+        """Attach optional monthly macro features to the dataset."""
+        macro_df = RealEstateDataLoader._build_macro_feature_df(df)
+        if macro_df.empty:
+            return df.copy()
+
+        augmented = df.copy()
+        augmented["sale_month"] = augmented["date"].dt.to_period("M").astype(str)
+        augmented = augmented.merge(macro_df, on="sale_month", how="left")
+        augmented["mortgage_rate"] = augmented["mortgage_rate"].ffill().bfill()
+        augmented["mortgage_rate"] = augmented["mortgage_rate"].fillna(augmented["mortgage_rate"].median())
+        return augmented
 
     def apply_outlier_pipeline(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, dict]:
         df = df.copy()
@@ -166,6 +226,7 @@ class RealEstateDataLoader:
         logger.info(f"Loading data from {self.filepath}...")
         self.df = pd.read_csv(self.filepath)
         self.df["date"] = pd.to_datetime(self.df["date"])
+        self.df = self.augment_with_macro_features(self.df)
 
         logger.info(f"Shape: {self.df.shape}")
         logger.info(f"Columns: {self.df.columns.tolist()}")

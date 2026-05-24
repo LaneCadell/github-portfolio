@@ -24,7 +24,8 @@ def load_raw_data(data_path: str) -> pd.DataFrame:
     """Load raw King's County data without hidden filtering."""
     df = pd.read_csv(data_path)
     df["date"] = pd.to_datetime(df["date"])
-    return df
+    loader = RealEstateDataLoader(data_path)
+    return loader.augment_with_macro_features(df)
 
 
 def add_derived_fields(df: pd.DataFrame) -> pd.DataFrame:
@@ -61,6 +62,22 @@ def plot_scatter(df: pd.DataFrame, x_col: str, y_col: str, title: str, filename:
     ax.set_xlabel(x_col)
     ax.set_ylabel(y_col)
     save_figure(fig, filename)
+
+
+def plot_macro_trend(df: pd.DataFrame) -> None:
+    if "mortgage_rate" not in df.columns:
+        logger.info("No mortgage_rate column present; skipping macro trend plot.")
+        return
+
+    monthly = df.groupby("sale_month")["mortgage_rate"].mean().reset_index()
+    monthly["sale_month"] = pd.to_datetime(monthly["sale_month"])
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.lineplot(data=monthly, x="sale_month", y="mortgage_rate", ax=ax, color="#2a5d84")
+    ax.set_title("Average Monthly Mortgage Rate by Sale Month")
+    ax.set_xlabel("Sale Month")
+    ax.set_ylabel("30-Year Mortgage Rate (%)")
+    save_figure(fig, "mortgage_rate_trend.png")
 
 
 def save_data_quality_report(report: dict, imputation_report: dict, before_count: int, after_count: int) -> None:
@@ -142,6 +159,7 @@ def run_eda(data_path: str) -> dict:
     plot_distribution(raw_df, "age", "Approximate Age Distribution", "Age (years)", "age_distribution.png")
     plot_scatter(raw_df, "sqft_living", "price", "Price versus Living Area", "price_vs_sqft.png")
     plot_scatter(raw_df, "age", "price_per_sqft", "Age versus Price per Square Foot", "age_vs_ppsqft.png")
+    plot_macro_trend(raw_df)
 
     loader = RealEstateDataLoader(data_path)
     filtered_df, outlier_report = loader.apply_outlier_pipeline(raw_df)
