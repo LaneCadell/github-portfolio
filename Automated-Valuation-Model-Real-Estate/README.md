@@ -77,8 +77,7 @@ The latest verified full production pipeline run against `./kc_house_data.csv` c
 
 The latest regenerated AVM Q50 forecast beat the rolling monthly median baseline on the held-out test set after the same feature removal:
 
-- MAPE: 20.67% vs. 36.11% (15.43 percentage points better)
-- MdAPE: 16.58% vs. 30.01% (13.43 points better)
+- Median MAPE: 16.58% vs. 30.01% (13.43 percentage points better)
 - RMSE: 147,663.36 vs. 203,934.95 (56,271.59 lower)
 
 ![Model Lift Comparison](outputs/2_point_avm_baseline/model_lift_comparison.png)

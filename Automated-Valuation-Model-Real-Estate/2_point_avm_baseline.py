@@ -84,10 +84,16 @@ def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict:
 def plot_lift_comparison(y_true: np.ndarray, point_preds: np.ndarray, baseline_preds: np.ndarray) -> None:
     errors_model = np.abs((y_true - point_preds) / (y_true + 1e-10))
     errors_baseline = np.abs((y_true - baseline_preds) / (y_true + 1e-10))
+    median_model = float(np.median(errors_model))
+    median_baseline = float(np.median(errors_baseline))
 
     fig, ax = plt.subplots(figsize=(10, 6))
     sns.kdeplot(errors_model, label="Q50 AVM", fill=True, color="#1b76d1", alpha=0.6, ax=ax)
     sns.kdeplot(errors_baseline, label="Baseline Median", fill=True, color="#d1495b", alpha=0.6, ax=ax)
+    ax.axvline(median_model, color="#1b76d1", linestyle="--", linewidth=1.5,
+               label=f"Q50 AVM median MAPE: {median_model * 100:.2f}%")
+    ax.axvline(median_baseline, color="#d1495b", linestyle="--", linewidth=1.5,
+               label=f"Baseline median MAPE: {median_baseline * 100:.2f}%")
     ax.set_title("AVM Point Forecast Lift: Absolute Percentage Error Density")
     ax.set_xlabel("Absolute Percentage Error")
     ax.set_ylabel("Density")
