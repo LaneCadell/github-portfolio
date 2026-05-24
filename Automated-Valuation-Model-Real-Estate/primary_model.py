@@ -6,12 +6,22 @@ LightGBM-based AVM generating Q_10, Q_50, Q_90 price forecasts
 import os
 import pandas as pd
 import numpy as np
-import lightgbm as lgb
 from typing import Dict, Tuple, Optional
 import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+try:
+    import lightgbm as lgb
+    _HAS_LIGHTGBM = True
+except Exception as import_error:
+    _HAS_LIGHTGBM = False
+    from sklearn.ensemble import GradientBoostingRegressor as SklearnQuantileRegressor
+    logger.warning(
+        "LightGBM import failed: %s\nFalling back to sklearn.GradientBoostingRegressor for quantile regression.",
+        import_error,
+    )
 
 
 class PrimaryQuantileAVM:
@@ -70,34 +80,46 @@ class PrimaryQuantileAVM:
         for quantile in self.quantiles:
             logger.info(f"  Training Q_{int(quantile*100)} model...")
 
-            params = {
-                "objective": "quantile",
-                "alpha": quantile,
-                "metric": "quantile",
-                "learning_rate": self.learning_rate,
-                "max_depth": self.max_depth,
-                "num_leaves": 2 ** self.max_depth,
-                "min_data_in_leaf": 50,
-                "verbose": verbose,
-                "seed": self.seed,
-                "bagging_fraction": 0.8,
-                "feature_fraction": 0.8,
-                "lambda_l2": 1.0,
-            }
+            if _HAS_LIGHTGBM:
+                params = {
+                    "objective": "quantile",
+                    "alpha": quantile,
+                    "metric": "quantile",
+                    "learning_rate": self.learning_rate,
+                    "max_depth": self.max_depth,
+                    "num_leaves": 2 ** self.max_depth,
+                    "min_data_in_leaf": 50,
+                    "verbose": verbose,
+                    "seed": self.seed,
+                    "bagging_fraction": 0.8,
+                    "feature_fraction": 0.8,
+                    "lambda_l2": 1.0,
+                }
 
-            train_data = lgb.Dataset(
-                X_train[feature_cols],
-                label=y_train,
-                categorical_feature=categorical_features or [],
-                free_raw_data=False,
-            )
+                train_data = lgb.Dataset(
+                    X_train[feature_cols],
+                    label=y_train,
+                    categorical_feature=categorical_features or [],
+                    free_raw_data=False,
+                )
 
-            self.models[quantile] = lgb.train(
-                params,
-                train_data,
-                num_boost_round=self.n_estimators,
-                verbose_eval=False,
-            )
+                self.models[quantile] = lgb.train(
+                    params,
+                    train_data,
+                    num_boost_round=self.n_estimators,
+                    verbose_eval=False,
+                )
+            else:
+                model = SklearnQuantileRegressor(
+                    loss="quantile",
+                    alpha=quantile,
+                    n_estimators=self.n_estimators,
+                    learning_rate=self.learning_rate,
+                    max_depth=self.max_depth,
+                    random_state=self.seed,
+                )
+                model.fit(X_train[feature_cols], y_train)
+                self.models[quantile] = model
 
         logger.info("Primary AVM training complete")
 
@@ -115,7 +137,10 @@ class PrimaryQuantileAVM:
         
         predictions = {}
         for quantile, model in self.models.items():
-            pred = model.predict(X_test[feature_cols])
+            if _HAS_LIGHTGBM:
+                pred = model.predict(X_test[feature_cols])
+            else:
+                pred = model.predict(X_test[feature_cols])
             predictions[quantile] = np.array(pred)
 
         return predictions
