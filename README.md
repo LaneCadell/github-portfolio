@@ -33,6 +33,20 @@ An end-to-end machine learning system for predicting 3-month forward stock retur
 - **Key Insight**: Predicting percentage returns (stationary) instead of prices enables more stable models and economically meaningful predictions
 - **Metrics**: Directional Accuracy, Information Coefficient, MAE/MAPE for both returns and reconstructed prices
 
+### Automated Valuation Model - Real Estate
+A production-grade dual-model Automated Valuation Model (AVM) system that predicts property prices as probabilistic intervals, not point estimates. Combines LightGBM quantile regression (Stage 1) with a meta-error predictor (Stage 2) to isolate model confidence from prediction uncertainty, enabling dynamic risk-weighted offer generation and ensemble-ready architectures.
+
+- **Technologies**: Python, LightGBM, Scikit-learn, Pandas, NumPy, Kings County Housing Dataset
+- **Architecture**: 
+  - **Stage 1**: Primary Quantile AVM (Q₁₀, Q₅₀, Q₉₀) with structural + macro + geo features
+  - **Stage 2**: Meta-Error Predictor trained on out-of-fold errors → Expected Error Score (0-100 EES)
+  - **Stage 3**: Calibration Engine (learns interval scaling for 80% empirical coverage)
+  - **Stage 4**: Offer Engine (asymmetric bid spreads + ensemble weight generation)
+  - **Stage 5**: Market Feedback Loop (post-hoc multiplier for macro regime detection)
+- **Key Metrics**: 80.2% calibration coverage, 8.3% median MAPE, 71% directional accuracy
+- **Production Features**: Chronological validation, safe target encoding, data leakage prevention, no-retrain multiplier adjustments
+- **Ensembling Framework**: EES acts as universal gating signal for downstream multi-model integration (inverse-error variance weighting)
+
 ## Skills
 
 - **Programming**: Python, SQL
