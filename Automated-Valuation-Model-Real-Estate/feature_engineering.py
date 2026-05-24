@@ -33,6 +33,8 @@ class FeatureEngineer:
         Returns:
             Feature DataFrame ready for modeling
         """
+        columns_to_remove = ["lat", "long", "sqft_living15", "sqft_lot15"]
+        df = df.drop(columns=[col for col in columns_to_remove if col in df.columns])
         features = df[["id"]].copy()
 
         # --- STRUCTURAL FEATURES ---
