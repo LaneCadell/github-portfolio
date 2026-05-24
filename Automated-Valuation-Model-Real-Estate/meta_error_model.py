@@ -106,7 +106,6 @@ class MetaErrorPredictor:
             params,
             train_data,
             num_boost_round=self.n_estimators,
-            verbose_eval=False,
         )
 
         logger.info("Meta-Error Predictor training complete")
