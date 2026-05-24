@@ -143,8 +143,7 @@ pip install -r requirements.txt
 ### Full Pipeline Run
 
 ```bash
-python main.py --data-path /Users/kayleighinman/Downloads/kc_house_data.csv \
-               --base-spread 0.05 \
+python main.py --base-spread 0.05 \
                --target-coverage 0.80
 ```
 
