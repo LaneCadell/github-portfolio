@@ -124,6 +124,3 @@ print(offer_report.head(10)[["property_id", "median_forecast", "buy_offer_price"
 
 This system is designed for acquisition decisions, not just value estimation. It gives buyers a price range and a risk signal, so offer decisions can be made with richer, more disciplined information.
 
-## Recommended next step
-
-Run `python 1_king_county_eda.py --data-path ./kc_house_data.csv` first, then run `python 2_point_avm_baseline.py --data-path ./kc_house_data.csv` to generate the model lift comparison report.
