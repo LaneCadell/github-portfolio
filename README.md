@@ -43,7 +43,7 @@ A production-grade dual-model Automated Valuation Model (AVM) system that predic
   - **Stage 3**: Calibration Engine (learns interval scaling for 80% empirical coverage)
   - **Stage 4**: Offer Engine (asymmetric bid spreads + ensemble weight generation)
   - **Stage 5**: Market Feedback Loop (post-hoc multiplier for macro regime detection)
-- **Key Metrics**: 80.2% calibration coverage, ~50% reduction in median MAPE (vs baseline model), 71% directional accuracy.
+- **Key Metrics**: 80.2% calibration coverage, ~50% reduction in median MAPE vs baseline model, 71% directional accuracy.
 - **Production Features**: Chronological validation, safe target encoding, data leakage prevention, no-retrain multiplier adjustments
 - **Ensembling Framework**: Expected Error Score (EES) acts as universal gating signal for downstream multi-model integration (inverse-error variance weighting)
 
