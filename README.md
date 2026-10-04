@@ -57,9 +57,9 @@ A production-grade dual-model Automated Valuation Model (AVM) system that predic
 
 ## Resume
 
-For a detailed overview of my professional experience, education, and certifications, please view my resume:
+For a detailed overview of my professional experience, education, and certifications, please view my updated resume:
 
-[Lane_Cadell_Resume.pdf](./Lane_Cadell_Resume.pdf)
+[Cadell_Lane_Resume.pdf](./Cadell_Lane_Resume.pdf)
 
 ## Contact
 
